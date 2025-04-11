@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { ExpertModule } from './modules/styleExpert/expert.module';
+import { HeaderUserMiddleware } from './common/middlewares/headeruser.middleware';
 
 @Module({
   imports: [
@@ -22,4 +23,8 @@ import { ExpertModule } from './modules/styleExpert/expert.module';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HeaderUserMiddleware).forRoutes('*');
+  }
+}

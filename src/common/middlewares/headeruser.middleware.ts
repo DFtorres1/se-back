@@ -43,7 +43,7 @@ export class HeaderUserMiddleware implements NestMiddleware {
       throw new NotFoundException('User not found');
     }
 
-    req.push(user)
+    req.user = user
     next();
   }
 }

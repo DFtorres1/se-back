@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
-// import { RegisterDto } from 'src/modules/users/dto/register.dto';
-// import { CreateUserRequestDto } from '../dto/createUserRequest.dto';
+import { Body, Controller, NotFoundException, Post, Req } from '@nestjs/common';
+import { Request } from 'express';
+import { CreateUserRequestDto } from '../dto/createUserRequest.dto';
 import { EvaluateRequestDto } from '../dto/evaluateRequest.dto';
 import { StyleExpertService } from '../providers/expert.service';
 
@@ -13,13 +13,24 @@ export class StyleExpertController {
   //   @Body() createUserRequestDto: CreateUserRequestDto,
   //   @Req() req: Request,
   // ) {
-  //   return this.expertService.createUserRequest(createUserRequestDto);
+  //   const user = req.user;
+  //   if (!user) {
+  //     throw new NotFoundException('Invalid user: user not found');
+  //   }
+  //   return this.expertService.createUserRequest(user, createUserRequestDto);
   // }
 
   @Post('evaluate')
   async evaluateRecommendation(
     @Body() evaluateDto: EvaluateRequestDto,
+    @Req() req: Request,
   ): Promise<{ recommendation: string }> {
+    const user = req.user;
+    if (!user) {
+      throw new NotFoundException('Invalid user: user not found');
+    }
+
+    this.expertService.createUserRequest(user, evaluateDto);
     const recommendation = await this.expertService.evaluateExpert(evaluateDto);
     return { recommendation };
   }
